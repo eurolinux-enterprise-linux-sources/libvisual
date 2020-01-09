@@ -2,7 +2,7 @@
 
 Name:           libvisual
 Version:        0.4.0
-Release:        9.1%{?dist}
+Release:        10%{?dist}
 Summary:        Abstraction library for audio visualisation plugins
 
 Group:          Applications/Multimedia
@@ -62,6 +62,45 @@ find $RPM_BUILD_ROOT -type f -name "*.la" -exec rm -f {} ';'
 
 %find_lang %{name}-%{smallversion}
 
+# multilib header hack
+# we only apply this to known Red Hat multilib arches, per bug #658064
+# taken from libtiff
+case `uname -i` in
+  i386 | ppc | s390 | sparc )
+    wordsize="32"
+    ;;
+  x86_64 | ppc64 | s390x | sparc64 )
+    wordsize="64"
+    ;;
+  *)
+    wordsize=""
+    ;;
+esac
+
+if test -n "$wordsize"
+then
+  mv $RPM_BUILD_ROOT%{_includedir}/libvisual-0.4/libvisual/lvconfig.h \
+     $RPM_BUILD_ROOT%{_includedir}/libvisual-0.4/libvisual/lvconfig-$wordsize.h
+
+  cat >$RPM_BUILD_ROOT%{_includedir}/libvisual-0.4/libvisual/lvconfig.h <<EOF
+#ifndef __LV_CONFIG_MULTILIB_H__
+#define __LV_CONFIG_MULTILIB_H__
+
+#include <bits/wordsize.h>
+
+#if __WORDSIZE == 32
+# include <libvisual/lvconfig-32.h>
+#elif __WORDSIZE == 64
+# include <libvisual/lvconfig-64.h>
+#else
+# error "unexpected value for __WORDSIZE macro"
+#endif
+
+#endif
+EOF
+
+fi
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -86,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 07 2014 Benjamin Otte <otte@redhat.com> - 0.4.0-10
+- Fix multilib conflicts
+
 * Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 0.4.0-9.1
 - Rebuilt for RHEL 6
 
