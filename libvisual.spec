@@ -2,7 +2,7 @@
 
 Name:           libvisual
 Version:        0.4.0
-Release:        14%{?dist}
+Release:        16%{?dist}
 Summary:        Abstraction library for audio visualisation plugins
 
 Group:          Applications/Multimedia
@@ -107,6 +107,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 0.4.0-16
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.4.0-15
+- Mass rebuild 2013-12-27
+
 * Wed Oct  9 2013 Matthias Clasen <mclasen@redhat.com> - 0.4.0-14
   Fixes for #884104
 - Disable strict aliasing
